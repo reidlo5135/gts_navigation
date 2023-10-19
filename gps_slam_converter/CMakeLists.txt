@@ -31,7 +31,7 @@ find_package(PROJ REQUIRED CONFIG)
 
 add_definitions(-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H)
 
-set(SOURCES
+set(source_sets
   include/gps_slam_converter/utils.hxx
   src/conversions/gps_to_slam.cxx
   src/conversions/slam_to_gps.cxx
@@ -50,7 +50,7 @@ set(SOURCES
   src/main.cxx
 )
 
-set(DEPENDS
+set(dependencies
   rclcpp
   std_msgs
   sensor_msgs
@@ -60,22 +60,52 @@ set(DEPENDS
   PROJ
 )
 
-add_executable(converter
-  ${SOURCES}
+set(executable_name converter)
+
+add_executable(${executable_name}
+  ${source_sets}
 )
 
-ament_target_dependencies(converter
-  ${DEPENDS}
+set(library_name ${executable_name}_core)
+
+add_library(${library_name} SHARED
+  ${source_sets}
 )
 
-install(TARGETS
-  converter
+ament_target_dependencies(${executable_name}
+  ${dependencies}
+)
+
+target_link_libraries(${executable_name} ${library_name})
+
+ament_target_dependencies(${library_name}
+  ${dependencies}
+)
+
+install(TARGETS ${executable_name}
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS ${library_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}
 )
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_export_include_directories(include)
 
 ament_package()

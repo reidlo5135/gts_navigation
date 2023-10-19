@@ -29,7 +29,7 @@ find_package(nav2_msgs REQUIRED)
 find_package(gps_navigation_msgs REQUIRED)
 find_package(PROJ REQUIRED CONFIG)
 
-set(SOURCES
+set(source_sets
   include/gps_slam_navigation/utils.hxx
   src/points/geo_point.cxx
   src/points/gts_point.cxx
@@ -46,7 +46,7 @@ set(SOURCES
   src/main.cxx
 )
 
-set(DEPENDS
+set(dependencies
   rclcpp
   rclcpp_action
   sensor_msgs
@@ -56,29 +56,59 @@ set(DEPENDS
   PROJ
 )
 
-add_executable(navigator
-  ${SOURCES}
-)
-
-ament_target_dependencies(navigator
-  ${DEPENDS}
-)
-
 add_definitions(-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H)
 
+set(executable_name navigator)
+
+add_executable(${executable_name}
+  ${source_sets}
+)
+
+set(library_name ${executable_name}_core)
+
+add_library(${library_name} SHARED
+  ${source_sets}
+)
+
+ament_target_dependencies(${executable_name}
+  ${dependencies}
+)
+
+target_link_libraries(${executable_name} ${library_name})
+
 target_link_libraries(
-  navigator
+  ${executable_name}
   PROJ::proj
 )
 
-install(TARGETS
-  navigator
+ament_target_dependencies(${library_name}
+  ${dependencies}
+)
+
+install(TARGETS ${executable_name}
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS ${library_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}
 )
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_export_include_directories(include)
 
 ament_package()

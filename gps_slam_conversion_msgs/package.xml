@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>gps_slam_conversion_msgs</name>
-  <version>1.0.0</version>
+  <version>0.1.2</version>
   <description>ROS2(foxy) GPS / SLAM Conversion Message</description>
   <maintainer email="201840103@email.daelim.ac.kr">reidlo</maintainer>
   <license>Apache 2.0</license>

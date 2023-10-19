@@ -10,7 +10,7 @@ def generate_launch_description():
     package_shared_directory: str = get_package_share_directory(package_name)
     executable_name: str = 'navigator'
     
-    navigation_node = Node(
+    navigator_node = Node(
         package=package_name,
         executable=executable_name,
         name=executable_name,
@@ -18,6 +18,6 @@ def generate_launch_description():
         parameters=[]
     )
     
-    ld.add_action(navigation_node)
+    ld.add_action(navigator_node)
     
     return ld
