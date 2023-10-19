@@ -1,0 +1,9 @@
+std_msgs/String conversion_target
+sensor_msgs/NavSatFix[] gps_request_list
+geometry_msgs/Pose[] slam_pose_request_list
+
+---
+
+std_msgs/String conversion_target
+sensor_msgs/NavSatFix[] gps_response_list
+geometry_msgs/Pose[] slam_pose_response_list
