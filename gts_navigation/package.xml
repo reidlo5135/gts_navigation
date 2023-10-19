@@ -11,6 +11,7 @@
 
   <exec_depend>gps_slam_conversion_msgs</exec_depend>
   <exec_depend>gps_slam_converter</exec_depend>
+  <exec_depend>gps_navigation_msgs</exec_depend>
   <exec_depend>gps_slam_navigation</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
