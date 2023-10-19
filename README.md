@@ -1,7 +1,7 @@
-# gps_slam_navigation
+# gts_navigation
 
 ## Document
-- [gps_slam_navigation - For navigate by nav2 navigate_to_pose converted SLAM coordinate from GPS](#gpsslamconverter)
+- [gps_slam_navigation - ROS2(foxy) GPS -> SLAM navigate_to_pose navigation package](#gtsnavigation)
     - [Document](#document)
     - [Environment](#1-environment)
     - [SetUp Installation](#2-setup-installation)
@@ -33,15 +33,19 @@ Before installing, please ensure the following software is installed and configu
 ### 3-1. Clone Project
 ```bash
 cd ${your workspace}/src
-git clone https://github.com/reidlo5135/gps_slam_navigation.git
+git clone https://github.com/reidlo5135/gts_navigation.git
 ```
 
 ## 3-2. Build Project
 ```bash
 source /opt/ros/foxy/setup.bash
-cd ${your workspace}/src/gps_slam_navigation
+cd ${your workspace}/src/gts_navigation
 colcon build --symlink-install
 cd ../..
+colcon build --packages-select gps_slam_conversion_msgs
+source install/setup.bash
+colcon build --packages-select gps_slam_converter
+source install/setup.bash
 colcon build --packages-select gps_slam_navigation
 source install/setup.bash
 ```

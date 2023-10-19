@@ -11,7 +11,7 @@
       - [Build Project](#3-2-build-project)
 
 ## 1. Environment
-* <img src="https://img.shields.io/badge/ros2-22314E?style=for-the-badge&logo=ros&logoColor=white">
+* <img src="https://img.shields.io/badge/ros2 foxy-22314E?style=for-the-badge&logo=ros&logoColor=white">
 * <img src="https://img.shields.io/badge/c++ 11-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
 * <img src="https://img.shields.io/badge/cmake 3.2.1-064F8C?style=for-the-badge&logo=cmake&logoColor=white">
 * <img src="https://img.shields.io/badge/python 3.8.10-3776AB?style=for-the-badge&logo=python&logoColor=white">
