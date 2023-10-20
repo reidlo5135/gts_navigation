@@ -11,7 +11,7 @@
 #include <std_msgs/msg/string.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
-#include <gps_slam_conversion_msgs/srv/conversion.hpp>
+#include <gps_navigation_msgs/srv/coordinate_conversion.hpp>
 
 #include "math/math.hxx"
 #include "points/points.hxx"
@@ -50,11 +50,11 @@ namespace gps_slam_converter
             rclcpp::CallbackGroup::SharedPtr converted_gps_publisher_cb_group_;
             rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr converted_gps_publisher_;
 
-            rclcpp::Service<gps_slam_conversion_msgs::srv::Conversion>::SharedPtr converter_service_;
+            rclcpp::Service<gps_navigation_msgs::srv::CoordinateConversion>::SharedPtr converter_service_;
 
             void slam_pose_subscription_cb(geometry_msgs::msg::Pose::SharedPtr slam_pose_cb_data);
             void gps_subscription_cb(sensor_msgs::msg::NavSatFix::SharedPtr gps_cb_data);
-            void converter_service_cb(const gps_slam_conversion_msgs::srv::Conversion::Request::SharedPtr request, gps_slam_conversion_msgs::srv::Conversion::Response::SharedPtr response);
+            void converter_service_cb(const gps_navigation_msgs::srv::CoordinateConversion::Request::SharedPtr request, gps_navigation_msgs::srv::CoordinateConversion::Response::SharedPtr response);
 
         public:
             explicit Converter();

@@ -53,7 +53,7 @@ gps_slam_converter::converter::Converter::Converter()
         rclcpp::QoS(rclcpp::KeepLast(10)),
         converted_gps_publihser_opts);
 
-    this->converter_service_ = this->rcl_node_->create_service<gps_slam_conversion_msgs::srv::Conversion>(
+    this->converter_service_ = this->rcl_node_->create_service<gps_navigation_msgs::srv::CoordinateConversion>(
         RCL_CONVERTER_SERVICE_SERVER_NAME,
         std::bind(&gps_slam_converter::converter::Converter::converter_service_cb, this, _1, _2));
 }
@@ -136,7 +136,7 @@ void gps_slam_converter::converter::Converter::gps_subscription_cb(sensor_msgs::
     }
 }
 
-void gps_slam_converter::converter::Converter::converter_service_cb(const gps_slam_conversion_msgs::srv::Conversion::Request::SharedPtr request, gps_slam_conversion_msgs::srv::Conversion::Response::SharedPtr response)
+void gps_slam_converter::converter::Converter::converter_service_cb(const gps_navigation_msgs::srv::CoordinateConversion::Request::SharedPtr request, gps_navigation_msgs::srv::CoordinateConversion::Response::SharedPtr response)
 {
     const std::string &request_conversion_target_data = request->conversion_target.data;
     std::vector<sensor_msgs::msg::NavSatFix> gps_request_list = request->gps_request_list;

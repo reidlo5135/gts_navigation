@@ -25,7 +25,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(gps_slam_conversion_msgs REQUIRED)
+find_package(gps_navigation_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(PROJ REQUIRED CONFIG)
 
@@ -55,7 +55,7 @@ set(dependencies
   std_msgs
   sensor_msgs
   geometry_msgs
-  gps_slam_conversion_msgs
+  gps_navigation_msgs
   builtin_interfaces
   PROJ
 )

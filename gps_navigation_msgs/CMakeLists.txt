@@ -18,6 +18,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(action_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
@@ -25,8 +26,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/GoalWaypointsStamped.msg"
   "msg/NavigationStatusStamped.msg"
   "msg/NavigationResultStamped.msg"
-  "srv/GoalCancel.srv"
-  DEPENDENCIES std_msgs geometry_msgs action_msgs
+  "srv/CoordinateConversion.srv"
+  DEPENDENCIES std_msgs geometry_msgs action_msgs sensor_msgs
 )
 
 ament_export_dependencies(rosidl_default_generators)
