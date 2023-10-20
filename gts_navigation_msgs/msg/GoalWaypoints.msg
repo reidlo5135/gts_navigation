@@ -1,0 +1,1 @@
+geometry_msgs/Point[] goal_waypoints_list
