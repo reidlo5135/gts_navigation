@@ -10,16 +10,16 @@ gts_navigator::Navigator::Navigator()
     RCLCPP_LINE_INFO();
 
     this->navigate_to_pose_client_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(
-        node_ptr_,
+        this->node_ptr_,
         RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME);
 
     this->flag_rcl_connections(RCL_ACTION_CLIENT_FLAG, RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME);
 
-    this->goal_waypoints_subscription_cb_group_ = node_ptr_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+    this->goal_waypoints_subscription_cb_group_ = this->node_ptr_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     rclcpp::SubscriptionOptions gps_waypoints_subscription_opts;
     gps_waypoints_subscription_opts.callback_group = goal_waypoints_subscription_cb_group_;
 
-    this->goal_waypoints_subscription_ = node_ptr_->create_subscription<gts_navigation_msgs::msg::GoalWaypoints>(
+    this->goal_waypoints_subscription_ = this->node_ptr_->create_subscription<gts_navigation_msgs::msg::GoalWaypoints>(
         RCL_GOAL_WAYPOINTS_STAMPED_TOPIC,
         rclcpp::QoS(rclcpp::KeepLast(RCL_DEFAULT_QOS)),
         std::bind(&gts_navigator::Navigator::goal_waypoints_subscription_cb, this, _1),
@@ -27,11 +27,11 @@ gts_navigator::Navigator::Navigator()
 
     this->flag_rcl_connections(RCL_SUBSCRIPTION_FLAG, RCL_GOAL_WAYPOINTS_STAMPED_TOPIC);
 
-    this->navigate_to_pose_goal_status_subscription_cb_group_ = node_ptr_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+    this->navigate_to_pose_goal_status_subscription_cb_group_ = this->node_ptr_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     rclcpp::SubscriptionOptions navigate_to_pose_goal_status_subscription_opts;
     navigate_to_pose_goal_status_subscription_opts.callback_group = navigate_to_pose_goal_status_subscription_cb_group_;
 
-    this->navigate_to_pose_goal_status_subscription_ = node_ptr_->create_subscription<action_msgs::msg::GoalStatusArray>(
+    this->navigate_to_pose_goal_status_subscription_ = this->node_ptr_->create_subscription<action_msgs::msg::GoalStatusArray>(
         RCL_NAVIGATE_TO_POSE_GOAL_STATUS_TOPIC,
         rclcpp::QoS(rclcpp::KeepLast(RCL_DEFAULT_QOS)),
         std::bind(&gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb, this, _1),
