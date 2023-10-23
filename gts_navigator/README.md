@@ -1,7 +1,7 @@
-# gps_slam_navigation
+# gts_navigator
 
 ## Document
-- [gps_slam_navigation - For navigate by nav2 navigate_to_pose converted SLAM coordinate from GPS](#gpsslamconverter)
+- [gts_navigator - For navigate by nav2 navigate_to_pose converted SLAM coordinate from GPS](#gtsnavigator)
     - [Document](#document)
     - [Environment](#1-environment)
     - [SetUp Installation](#2-setup-installation)
