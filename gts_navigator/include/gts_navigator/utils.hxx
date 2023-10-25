@@ -18,9 +18,10 @@
 #include <rcutils/logging_macros.h>
 #include <std_msgs/msg/header.hpp>
 #include <geometry_msgs/msg/point.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <action_msgs/msg/goal_status_array.hpp>
+#include <gps_slam_conversion_msgs/srv/conversion.hpp>
 #include <gts_navigation_msgs/msg/goal_waypoints.hpp>
 #include <gts_navigation_msgs/msg/navigation_status_stamped.hpp>
 #include <gts_navigation_msgs/msg/navigation_result_stamped.hpp>
@@ -90,6 +91,7 @@ static constexpr const char *RCL_SERVICE_SERVER_FLAG = "service_server";
  */
 static constexpr const char *RCL_ACTION_CLIENT_FLAG = "action_client";
 
+static constexpr const char *RCL_GPS_SLAM_CONVERSION_SERVICE_SERVER_NAME = "/gps_slam_converter/conversion";
 
 /**
  * @brief static const instance for define topic rclcpp::Subscription<gps_navigation_msgs::msg::GoalWaypointsStamped>

@@ -14,7 +14,8 @@
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>nav2_msgs</depend>
-  <depend>gps_navigation_msgs</depend>
+  <depend>gps_slam_conversion_msgs</depend>
+  <depend>gts_navigation_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
