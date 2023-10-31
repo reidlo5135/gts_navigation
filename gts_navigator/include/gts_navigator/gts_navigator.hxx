@@ -38,6 +38,8 @@ namespace gts_navigator
         rclcpp::CallbackGroup::SharedPtr gts_navigation_result_publisher_cb_group_;
         rclcpp::Publisher<gts_navigation_msgs::msg::NavigationResultStamped>::SharedPtr gts_navigation_result_publisher_;
 
+        rclcpp::Service<gts_navigation_msgs::srv::GoalCancel>::SharedPtr gts_navigation_goal_cancel_service_server_;
+
         void flag_rcl_connections(const char *connection_type, const char *connection_name);
         std_msgs::msg::Header build_header();
         void gps_goal_waypoints_subscription_cb(const gts_navigation_msgs::msg::GoalWaypoints::SharedPtr gps_goal_waypoints_cb_data);
@@ -49,6 +51,7 @@ namespace gts_navigator
         void navigate_to_pose_goal_response_cb(std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> future);
         void navigate_to_pose_feedback_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr goal_handle, const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback);
         void navigate_to_pose_result_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult &wrapped_result);
+        void gts_navigation_goal_cancel_request_cb(const std::shared_ptr<rmw_request_id_t> request_header, const gts_navigation_msgs::srv::GoalCancel::Request::SharedPtr request, const gts_navigation_msgs::srv::GoalCancel::Response::SharedPtr response);
 
     public:
         explicit Navigator();

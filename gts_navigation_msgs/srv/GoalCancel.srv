@@ -1,6 +1,4 @@
-bool cancel_goal_current
-bool cancel_goal_before
-bool cancel_goal_all
+bool cancel_goals
 
 ---
 

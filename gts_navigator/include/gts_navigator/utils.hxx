@@ -25,6 +25,7 @@
 #include <gts_navigation_msgs/msg/goal_waypoints.hpp>
 #include <gts_navigation_msgs/msg/navigation_status_stamped.hpp>
 #include <gts_navigation_msgs/msg/navigation_result_stamped.hpp>
+#include <gts_navigation_msgs/srv/goal_cancel.hpp>
 
 /**
  * ------------------------------------------------------
@@ -109,6 +110,8 @@ static constexpr const char *RCL_NAVIGATE_TO_POSE_GOAL_STATUS_TOPIC = "/navigate
  */
 static constexpr const char *RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME = "navigate_to_pose";
 
+static constexpr const char *RCL_GTS_NAVIGATION_GOAL_CANCEL_SERVICE_SERVER_NAME = "/gts_navigation/goal_cancel";
+
 /**
  * --------------------------------------------------.---
  * ------------------- RCL AREA END ---------------------
@@ -133,5 +136,6 @@ static constexpr const char *RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME = "navigate
  */
 using std::placeholders::_1;
 using std::placeholders::_2;
+using std::placeholders::_3;
 
 #endif

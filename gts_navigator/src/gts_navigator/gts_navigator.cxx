@@ -6,8 +6,17 @@ gts_navigator::Navigator::Navigator()
 {
     this->node_ = std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node *) {});
 
-    RCLCPP_INFO(this->node_->get_logger(), "[%s] has been started...", RCL_NODE_NAME);
-    RCLCPP_LINE_INFO();
+    if (this->node_ != nullptr)
+    {
+        RCLCPP_INFO(this->node_->get_logger(), "[%s] node has been created", RCL_NODE_NAME);
+        RCLCPP_LINE_INFO();
+    }
+    else
+    {
+        RCUTILS_LOG_ERROR_NAMED(RCL_NODE_NAME, "failed to create %s node", RCL_NODE_NAME);
+        RCLCPP_LINE_ERROR();
+        exit(RCL_STOP_FLAG);
+    }
 
     this->navigate_to_pose_client_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(
         this->node_,
@@ -48,8 +57,8 @@ gts_navigator::Navigator::Navigator()
     this->flag_rcl_connections(RCL_SUBSCRIPTION_FLAG, RCL_NAVIGATE_TO_POSE_GOAL_STATUS_TOPIC);
 
     gts_navigation_status_publisher_cb_group_ = this->node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    rclcpp::PublisherOptions gps_navigation_status_publisher_opts;
-    gps_navigation_status_publisher_opts.callback_group = gts_navigation_status_publisher_cb_group_;
+    rclcpp::PublisherOptions gts_navigation_status_publisher_opts;
+    gts_navigation_status_publisher_opts.callback_group = gts_navigation_status_publisher_cb_group_;
 
     gts_navigation_status_publisher_ = this->node_->create_publisher<gts_navigation_msgs::msg::NavigationStatusStamped>(
         RCL_NAVIGATION_STATUS_STAMPED_TOPIC,
@@ -58,8 +67,8 @@ gts_navigator::Navigator::Navigator()
     this->flag_rcl_connections(RCL_PUBLISHER_FLAG, RCL_NAVIGATION_STATUS_STAMPED_TOPIC);
 
     gts_navigation_result_publisher_cb_group_ = this->node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    rclcpp::PublisherOptions gps_navigation_result_publisher_opts;
-    gps_navigation_result_publisher_opts.callback_group = gts_navigation_result_publisher_cb_group_;
+    rclcpp::PublisherOptions gts_navigation_result_publisher_opts;
+    gts_navigation_result_publisher_opts.callback_group = gts_navigation_result_publisher_cb_group_;
 
     gts_navigation_result_publisher_ = this->node_->create_publisher<gts_navigation_msgs::msg::NavigationResultStamped>(
         RCL_NAVIGATION_RESULT_STAMPED_TOPIC,
@@ -68,6 +77,11 @@ gts_navigator::Navigator::Navigator()
     this->flag_rcl_connections(RCL_PUBLISHER_FLAG, RCL_NAVIGATION_RESULT_STAMPED_TOPIC);
 
     this->navigate_to_pose_goal_ = std::make_shared<rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::Goal>();
+
+    this->gts_navigation_goal_cancel_service_server_ = this->node_->create_service<gts_navigation_msgs::srv::GoalCancel>(
+        RCL_GTS_NAVIGATION_GOAL_CANCEL_SERVICE_SERVER_NAME,
+        std::bind(&gts_navigator::Navigator::gts_navigation_goal_cancel_request_cb, this, _1, _2, _3)
+    );
 }
 
 gts_navigator::Navigator::~Navigator()
@@ -444,4 +458,12 @@ void gts_navigator::Navigator::navigate_to_pose_feedback_cb(const rclcpp_action:
  */
 void gts_navigator::Navigator::navigate_to_pose_result_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult &wrapped_result)
 {
+}
+
+void gts_navigator::Navigator::gts_navigation_goal_cancel_request_cb(const std::shared_ptr<rmw_request_id_t> request_header, const gts_navigation_msgs::srv::GoalCancel::Request::SharedPtr request, const gts_navigation_msgs::srv::GoalCancel::Response::SharedPtr response)
+{
+    const bool &is_request_cancel_goals = (request->cancel_goals == true);
+
+    RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_goal_cancel request : [%d]", is_request_cancel_goals);
+    RCLCPP_LINE_INFO();
 }
