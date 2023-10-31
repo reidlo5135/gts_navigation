@@ -25,6 +25,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
+find_package(gps_slam_conversion_msgs REQUIRED)
 find_package(gts_navigation_msgs REQUIRED)
 find_package(PROJ REQUIRED CONFIG)
 
@@ -39,6 +40,7 @@ set(dependencies
   rclcpp_action
   sensor_msgs
   geometry_msgs
+  gps_slam_conversion_msgs
   gts_navigation_msgs
   nav2_msgs
   PROJ

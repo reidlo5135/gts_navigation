@@ -1,1 +1,1 @@
-geometry_msgs/Point[] goal_waypoints_list
+sensor_msgs/NavSatFix[] goal_waypoints_list

@@ -26,7 +26,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/GoalWaypoints.msg"
   "msg/NavigationStatusStamped.msg"
   "msg/NavigationResultStamped.msg"
-  "srv/CoordinateConversion.srv"
+  "srv/GoalCancel.srv"
   DEPENDENCIES std_msgs geometry_msgs action_msgs sensor_msgs
 )
 
