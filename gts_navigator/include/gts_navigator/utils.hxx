@@ -9,6 +9,7 @@
 #include <cmath>
 #include <signal.h>
 #include <memory>
+#include <ctime>
 
 /**
  * @brief include header files for rclcpp
@@ -21,11 +22,14 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <action_msgs/msg/goal_status_array.hpp>
+#include <action_msgs/srv/cancel_goal.hpp>
+#include <action_msgs/msg/goal_info.hpp>
 #include <gps_slam_conversion_msgs/srv/conversion.hpp>
 #include <gts_navigation_msgs/msg/goal_waypoints.hpp>
 #include <gts_navigation_msgs/msg/navigation_status_stamped.hpp>
 #include <gts_navigation_msgs/msg/navigation_result_stamped.hpp>
 #include <gts_navigation_msgs/srv/goal_cancel.hpp>
+#include <robot_status_msgs/msg/navigation_status.hpp>
 
 /**
  * ------------------------------------------------------
@@ -54,6 +58,8 @@ static constexpr const int &RCL_STOP_FLAG = 0;
  * @brief static const instance for define default Double value
  */
 static constexpr const double &RCL_DEFAULT_DOUBLE = 0.0;
+
+static constexpr const float &RCL_DEFAULT_FLOAT = 0.0f;
 
 /**
  * @brief static const instance for define gps_waypoints_vector default index
@@ -111,6 +117,19 @@ static constexpr const char *RCL_NAVIGATE_TO_POSE_GOAL_STATUS_TOPIC = "/navigate
 static constexpr const char *RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME = "navigate_to_pose";
 
 static constexpr const char *RCL_GTS_NAVIGATION_GOAL_CANCEL_SERVICE_SERVER_NAME = "/gts_navigation/goal_cancel";
+
+static constexpr const char *RCL_GTS_NAVIGATION_TASK_STATUS_PUBLISHER_TOPIC = "/gts_navigation/task_status";
+
+static constexpr const char *RCL_GTS_NAVIGATION_SUCCEEDED_FLAG = "success";
+static constexpr const char *RCL_GTS_NAVIGATION_FAILED_FLAG = "fail";
+
+static constexpr const char *RCL_GTS_NAVIGATION_TASK_STATUS_STARTED_FLAG = "started";
+
+static constexpr const char *RCL_GTS_NAVIGATION_TASK_STATUS_ENDED_FLAG = "ended";
+
+static constexpr const char *RCL_GTS_NAVIGATION_TASK_STATUS_MOVE_FLAG = "move";
+
+static constexpr const char *RCL_GTS_NAVIGATION_TASK_STATUS_WAIT_FLAG = "wait";
 
 /**
  * --------------------------------------------------.---
