@@ -1,0 +1,2 @@
+bool cancel_navigation
+bool resume_navigation

@@ -18,12 +18,14 @@
 #include <rcutils/logging_macros.h>
 #include <std_msgs/msg/header.hpp>
 #include <geometry_msgs/msg/point.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <action_msgs/msg/goal_status_array.hpp>
+#include <gps_slam_conversion_msgs/srv/conversion.hpp>
 #include <gts_navigation_msgs/msg/goal_waypoints.hpp>
 #include <gts_navigation_msgs/msg/navigation_status_stamped.hpp>
 #include <gts_navigation_msgs/msg/navigation_result_stamped.hpp>
+#include <gts_navigation_msgs/msg/navigation_control.hpp>
 
 /**
  * ------------------------------------------------------
@@ -90,6 +92,8 @@ static constexpr const char *RCL_SERVICE_SERVER_FLAG = "service_server";
  */
 static constexpr const char *RCL_ACTION_CLIENT_FLAG = "action_client";
 
+static constexpr const char *RCL_GPS_SLAM_CONVERSION_SERVICE_SERVER_NAME = "/gps_slam_converter/conversion";
+
 /**
  * @brief static const instance for define topic rclcpp::Subscription<gps_navigation_msgs::msg::GoalWaypointsStamped>
  */
@@ -105,6 +109,8 @@ static constexpr const char *RCL_NAVIGATE_TO_POSE_GOAL_STATUS_TOPIC = "/navigate
  * @brief static const instance for define name of rclcpp_action::Server<nav2_msgs::action::NavigateToPose>
  */
 static constexpr const char *RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME = "navigate_to_pose";
+
+static constexpr const char *RCL_GTS_NAVIGATION_CONTROL_SUBSCRIPTION_NAME = "/gts_navigation/control";
 
 /**
  * --------------------------------------------------.---
@@ -130,5 +136,6 @@ static constexpr const char *RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME = "navigate
  */
 using std::placeholders::_1;
 using std::placeholders::_2;
+using std::placeholders::_3;
 
 #endif
