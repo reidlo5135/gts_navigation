@@ -48,7 +48,7 @@ set(dependencies
   PROJ
 )
 
-set(executable_name navigator)
+set(executable_name gts_navigator)
 
 add_executable(${executable_name}
   ${source_sets}
