@@ -25,7 +25,9 @@ find_package(rclcpp_action REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
+find_package(gps_slam_conversion_msgs REQUIRED)
 find_package(gts_navigation_msgs REQUIRED)
+find_package(robot_status_msgs REQUIRED)
 find_package(PROJ REQUIRED CONFIG)
 
 set(source_sets
@@ -39,12 +41,14 @@ set(dependencies
   rclcpp_action
   sensor_msgs
   geometry_msgs
+  gps_slam_conversion_msgs
   gts_navigation_msgs
   nav2_msgs
+  robot_status_msgs
   PROJ
 )
 
-set(executable_name navigator)
+set(executable_name gts_navigator)
 
 add_executable(${executable_name}
   ${source_sets}

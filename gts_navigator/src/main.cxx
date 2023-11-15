@@ -21,12 +21,14 @@
 int main(int argc, const char *const *argv)
 {
 	rclcpp::init(argc, argv);
-	rclcpp::Node::SharedPtr rcl_node_ptr = std::make_shared<gts_navigator::Navigator>();
+	rclcpp::Node::SharedPtr node = std::make_shared<gts_navigator::Navigator>();
+	rclcpp::executors::MultiThreadedExecutor multithread_executor;
+	multithread_executor.add_node(node);
 
 	signal(SIGINT, &gts_navigator::Navigator::signal_handler);
 	signal(SIGTSTP, &gts_navigator::Navigator::signal_handler);
 
-	rclcpp::spin(rcl_node_ptr);
+	multithread_executor.spin();
 	rclcpp::shutdown();
 
 	return RCL_STOP_FLAG;
