@@ -50,6 +50,8 @@ static constexpr const int &RCL_DEFAULT_QOS = 10;
  */
 static constexpr const int &RCL_STOP_FLAG = 0;
 
+static constexpr const int &RCL_DEFAULT_INT = 0;
+
 /**
  * @brief static const instance for define default Double value
  */

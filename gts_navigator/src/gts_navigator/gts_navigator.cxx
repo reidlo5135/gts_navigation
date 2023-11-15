@@ -79,12 +79,14 @@ gts_navigator::Navigator::Navigator()
     this->gts_navigation_control_subscription_cb_group_ = this->node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     rclcpp::SubscriptionOptions gts_navigation_control_subscription_opts;
     gts_navigation_control_subscription_opts.callback_group = this->gts_navigation_control_subscription_cb_group_;
-    
+
     this->gts_navigation_control_subscription_ = this->node_->create_subscription<gts_navigation_msgs::msg::NavigationControl>(
         RCL_GTS_NAVIGATION_CONTROL_SUBSCRIPTION_NAME,
         rclcpp::QoS(rclcpp::KeepLast(RCL_DEFAULT_QOS)),
         std::bind(&gts_navigator::Navigator::gts_navigation_control_subscription_cb, this, _1),
         gts_navigation_control_subscription_opts);
+
+    this->flag_rcl_connections(RCL_SUBSCRIPTION_FLAG, RCL_GTS_NAVIGATION_CONTROL_SUBSCRIPTION_NAME);
 
     this->navigate_to_pose_goal_ = std::make_shared<rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::Goal>();
 }
@@ -358,18 +360,39 @@ void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_
     const bool &is_control_cancel_navigation = (gts_navigation_control_cb_data->cancel_navigation == true);
     const bool &is_control_resume_navigation = (gts_navigation_control_cb_data->resume_navigation == true);
 
-    if (is_control_cancel_navigation)
+    if (is_control_cancel_navigation && is_control_resume_navigation)
     {
-        RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_control_subscription trying to cancel all goals...");
+        return;
+    }
+    else if (is_control_cancel_navigation && !is_control_resume_navigation)
+    {
+        bool is_slam_waypoints_list_empty = (this->slam_waypoints_list_.empty()) || (this->slam_waypoints_list_index_ == RCL_DEFAULT_INT);
+
+        RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_control_subscription is_slam_waypoints_list_empty : [%d]", is_slam_waypoints_list_empty);
         RCLCPP_LINE_INFO();
 
-        this->navigate_to_pose_client_->async_cancel_all_goals();
+        if (is_slam_waypoints_list_empty)
+        {
+            RCLCPP_ERROR(this->node_->get_logger(), "gts_navigation_control_subscription waypoints_list is empty...");
+            RCLCPP_LINE_ERROR();
+            return;
+        }
+        else
+        {
+            RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_control_subscription trying to cancel all goals...");
+            RCLCPP_LINE_INFO();
+
+            this->navigate_to_pose_client_->async_cancel_all_goals();
+        }
     }
-    else if (is_control_resume_navigation)
+    else if (is_control_resume_navigation && !is_control_cancel_navigation)
     {
-        RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_control_subscription trying to resume navigation...");
+        RCLCPP_INFO(
+            this->node_->get_logger(),
+            "gts_navigation_control_subscription trying to resume navigation...\n\tcurrent waypoints_index : [%d]\n\twaypoints_list size : [%d]",
+            this->slam_waypoints_list_index_, this->slam_waypoints_list_size_);
         RCLCPP_LINE_INFO();
-        
+
         this->navigate_to_pose_send_goal();
     }
     else
