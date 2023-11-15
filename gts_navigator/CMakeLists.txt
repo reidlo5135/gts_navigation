@@ -28,7 +28,6 @@ find_package(nav2_msgs REQUIRED)
 find_package(gps_slam_conversion_msgs REQUIRED)
 find_package(gts_navigation_msgs REQUIRED)
 find_package(robot_status_msgs REQUIRED)
-find_package(PROJ REQUIRED CONFIG)
 
 set(source_sets
   include/gts_navigator/utils.hxx
@@ -45,7 +44,6 @@ set(dependencies
   gts_navigation_msgs
   nav2_msgs
   robot_status_msgs
-  PROJ
 )
 
 set(executable_name gts_navigator)
