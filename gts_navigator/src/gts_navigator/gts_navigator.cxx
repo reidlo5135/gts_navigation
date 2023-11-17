@@ -366,7 +366,7 @@ void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_
     }
     else if (is_control_cancel_navigation && !is_control_resume_navigation)
     {
-        bool is_slam_waypoints_list_empty = (this->slam_waypoints_list_.empty()) || (this->slam_waypoints_list_index_ == RCL_DEFAULT_INT);
+        bool is_slam_waypoints_list_empty = (this->slam_waypoints_list_.empty()) || (this->slam_waypoints_list_size_ == RCL_DEFAULT_INT);
 
         RCLCPP_INFO(this->node_->get_logger(), "gts_navigation_control_subscription is_slam_waypoints_list_empty : [%d]", is_slam_waypoints_list_empty);
         RCLCPP_LINE_INFO();
@@ -423,15 +423,13 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
         RCLCPP_LINE_ERROR();
         return;
     }
-    else
-    {
-        RCLCPP_INFO(
+
+    RCLCPP_INFO(
             this->node_->get_logger(),
             "navigate_to_pose action server is ready\n\tslam x : [%f]\n\tslam y : [%f]",
             slam_x,
             slam_y);
-        RCLCPP_LINE_INFO();
-    }
+    RCLCPP_LINE_INFO();
 
     geometry_msgs::msg::PoseStamped::UniquePtr geometry_msgs_pose_stamped = std::make_unique<geometry_msgs::msg::PoseStamped>();
 
