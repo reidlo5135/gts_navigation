@@ -10,11 +10,11 @@ def generate_launch_description() -> LaunchDescription:
     package_shared_directory: str = get_package_share_directory(package_name)
     
     navigator_node: Node = Node(
-        package=package_name,
-        executable=package_name,
-        name=package_name,
-        output='screen',
-        parameters=[]
+        package = package_name,
+        executable = package_name,
+        name = package_name,
+        output = 'screen',
+        parameters = []
     )
     
     ld.add_action(navigator_node)
