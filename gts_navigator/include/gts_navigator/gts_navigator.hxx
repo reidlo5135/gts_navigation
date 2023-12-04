@@ -41,8 +41,8 @@ namespace gts_navigator
         void gps_goal_waypoints_subscription_cb(const gts_navigation_msgs::msg::GoalWaypoints::SharedPtr gps_goal_waypoints_cb_data);
         void gps_slam_conversion_service_req(std::vector<sensor_msgs::msg::NavSatFix> gps_goal_waypoints_list);
         void navigate_to_pose_goal_status_subscription_cb(const action_msgs::msg::GoalStatusArray::SharedPtr goal_status_array_cb_data);
-        void gts_navigation_status_publish(const gts_navigation_msgs::msg::NavigationStatusStamped::UniquePtr &gts_navigation_status, const int &goal_status_code);
-        void gts_navigation_result_publish(const gts_navigation_msgs::msg::NavigationResultStamped::UniquePtr &gts_navigation_result, const int &goal_status_code);
+        void gts_navigation_status_publish(const int &goal_status_code);
+        void gts_navigation_result_publish(const int &goal_status_code);
         void gts_navigation_control_subscription_cb(const gts_navigation_msgs::msg::NavigationControl::SharedPtr gts_navigation_control_cb_data);
         void navigate_to_pose_send_goal();
         void navigate_to_pose_goal_response_cb(std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> future);
