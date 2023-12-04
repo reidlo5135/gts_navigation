@@ -231,14 +231,6 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
     }
     else
     {
-        std_msgs::msg::Header built_header = this->build_header();
-
-        gts_navigation_msgs::msg::NavigationStatusStamped::UniquePtr gts_navigation_status = std::make_unique<gts_navigation_msgs::msg::NavigationStatusStamped>();
-        gts_navigation_status->set__header(built_header);
-
-        gts_navigation_msgs::msg::NavigationResultStamped::UniquePtr gts_navigation_result = std::make_unique<gts_navigation_msgs::msg::NavigationResultStamped>();
-        gts_navigation_result->set__header(built_header);
-
         const action_msgs::msg::GoalStatus &goal_status = goal_status_array_cb_data->status_list.back();
         const uint8_t &goal_status_code = goal_status.status;
 
@@ -257,7 +249,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
             RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback goal started =====");
             RCLCPP_LINE_INFO();
 
-            this->gts_navigation_status_publish(gts_navigation_status, goal_status_code);
+            this->gts_navigation_status_publish(goal_status_code);
         }
         else if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_SUCCEEDED)
         {
@@ -269,7 +261,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
                 RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback goal waypoints ended =====");
                 RCLCPP_LINE_INFO();
 
-                this->gts_navigation_result_publish(gts_navigation_result, goal_status_code);
+                this->gts_navigation_result_publish(goal_status_code);
 
                 slam_waypoints_list_index_ = GOAL_WAYPOINTS_VECTOR_DEFAULT_IDX;
                 slam_waypoints_list_size_ = GOAL_WAYPOINTS_VECTOR_DEFAULT_SIZE;
@@ -284,7 +276,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
                 RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback will proceed next [%d] goal =====", slam_waypoints_list_index_);
                 RCLCPP_LINE_INFO();
 
-                this->gts_navigation_status_publish(gts_navigation_status, goal_status_code);
+                this->gts_navigation_status_publish(goal_status_code);
                 this->navigate_to_pose_send_goal();
             }
         }
@@ -296,7 +288,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
             RCLCPP_WARN(this->node_->get_logger(), "navigate_to_pose status callback will proceed previous [%d]st goal", slam_waypoints_list_index_);
             RCLCPP_LINE_WARN();
 
-            this->gts_navigation_status_publish(gts_navigation_status, goal_status_code);
+            this->gts_navigation_status_publish(goal_status_code);
             this->navigate_to_pose_send_goal();
         }
         else if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_CANCELED)
@@ -304,7 +296,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
             RCLCPP_ERROR(this->node_->get_logger(), "!!!!! navigate_to_pose status callback goal canceled !!!!!");
             RCLCPP_LINE_ERROR();
 
-            this->gts_navigation_status_publish(gts_navigation_status, goal_status_code);
+            this->gts_navigation_status_publish(goal_status_code);
         }
         else
         {
@@ -315,44 +307,36 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
     }
 }
 
-void gts_navigator::Navigator::gts_navigation_status_publish(const gts_navigation_msgs::msg::NavigationStatusStamped::UniquePtr &gps_navigation_status, const int &goal_status_code)
+void gts_navigator::Navigator::gts_navigation_status_publish(const int &goal_status_code)
 {
-    bool is_gps_navigation_status_nullptr = gps_navigation_status == nullptr;
+    gts_navigation_msgs::msg::NavigationStatusStamped::UniquePtr navigation_status_stamped = std::make_unique<gts_navigation_msgs::msg::NavigationStatusStamped>();
+    std_msgs::msg::Header built_header = this->build_header();
 
-    if (is_gps_navigation_status_nullptr)
-    {
-        RCLCPP_ERROR(this->node_->get_logger(), "navigation_status_stamped publishing failed with nullptr");
-        return;
-    }
+    navigation_status_stamped->set__header(built_header);
+    navigation_status_stamped->set__status_code(goal_status_code);
+    navigation_status_stamped->set__current_goal_index(slam_waypoints_list_index_);
+
+    const gts_navigation_msgs::msg::NavigationStatusStamped &&navigation_status_moved = std::move(*navigation_status_stamped);
+    this->gts_navigation_status_publisher_->publish(navigation_status_moved);
 
     RCLCPP_INFO(this->node_->get_logger(), "navigation_status_stamped published");
     RCLCPP_LINE_INFO();
-
-    gps_navigation_status->set__status_code(goal_status_code);
-    gps_navigation_status->set__current_goal_index(slam_waypoints_list_index_);
-
-    const gts_navigation_msgs::msg::NavigationStatusStamped &&gts_navigation_status_moved = std::move(*gps_navigation_status);
-    this->gts_navigation_status_publisher_->publish(gts_navigation_status_moved);
 }
 
-void gts_navigator::Navigator::gts_navigation_result_publish(const gts_navigation_msgs::msg::NavigationResultStamped::UniquePtr &gps_navigation_result, const int &goal_status_code)
+void gts_navigator::Navigator::gts_navigation_result_publish(const int &goal_status_code)
 {
-    bool is_gps_navigation_result_nullptr = gps_navigation_result == nullptr;
+    gts_navigation_msgs::msg::NavigationResultStamped::UniquePtr navigation_result_stamped = std::make_unique<gts_navigation_msgs::msg::NavigationResultStamped>();
+    std_msgs::msg::Header built_header = this->build_header();
 
-    if (is_gps_navigation_result_nullptr)
-    {
-        RCLCPP_ERROR(this->node_->get_logger(), "navigation_result_stamped publishing failed with nullptr");
-        return;
-    }
+    navigation_result_stamped->set__header(built_header);
+    navigation_result_stamped->set__result_code(goal_status_code);
+    navigation_result_stamped->set__result_index(slam_waypoints_list_index_);
+
+    const gts_navigation_msgs::msg::NavigationResultStamped &&navigation_result_stamped_moved = std::move(*navigation_result_stamped);
+    this->gts_navigation_result_publisher_->publish(navigation_result_stamped_moved);
 
     RCLCPP_INFO(this->node_->get_logger(), "navigation_result_stamped published");
     RCLCPP_LINE_INFO();
-
-    gps_navigation_result->set__result_code(goal_status_code);
-    gps_navigation_result->set__result_index(slam_waypoints_list_index_);
-
-    const gts_navigation_msgs::msg::NavigationResultStamped &&rcl_navigation_result_stamped_ptr_moved = std::move(*gps_navigation_result);
-    this->gts_navigation_result_publisher_->publish(rcl_navigation_result_stamped_ptr_moved);
 }
 
 void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_navigation_msgs::msg::NavigationControl::SharedPtr gts_navigation_control_cb_data)
@@ -383,6 +367,8 @@ void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_
             RCLCPP_LINE_INFO();
 
             this->navigate_to_pose_client_->async_cancel_all_goals();
+
+            this->gts_navigation_status_publish(RCL_NAVIGATE_TO_POSE_GOAL_STOPPED);
         }
     }
     else if (is_control_resume_navigation && !is_control_cancel_navigation)
@@ -394,6 +380,7 @@ void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_
         RCLCPP_LINE_INFO();
 
         this->navigate_to_pose_send_goal();
+        this->gts_navigation_status_publish(RCL_NAVIGATE_TO_POSE_GOAL_RESUMED);
     }
     else
     {
@@ -419,8 +406,11 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
 
     if (!is_navigate_to_pose_server_ready)
     {
-        RCLCPP_ERROR(this->node_->get_logger(), "navigate_to_pose action server is not available after waiting");
+        RCLCPP_ERROR(this->node_->get_logger(), "navigate_to_pose action server is not available after waiting... vacate SLAM waypoints_list");
         RCLCPP_LINE_ERROR();
+        this->slam_waypoints_list_.clear();
+        this->slam_waypoints_list_index_ = RCL_DEFAULT_INT;
+        this->slam_waypoints_list_size_ = RCL_DEFAULT_INT;
         return;
     }
 
