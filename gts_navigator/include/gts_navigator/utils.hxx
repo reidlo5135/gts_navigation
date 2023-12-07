@@ -67,7 +67,7 @@ static constexpr const int &GOAL_WAYPOINTS_VECTOR_DEFAULT_IDX = 0;
  */
 static constexpr const int &GOAL_WAYPOINTS_VECTOR_DEFAULT_SIZE = 0;
 
-static constexpr const int &RCL_NAVIGATE_TO_POSE_GOAL_STOPPED = 0;
+static constexpr const int &RCL_NAVIGATE_TO_POSE_GOAL_STOPPED = 5;
 
 static constexpr const int &RCL_NAVIGATE_TO_POSE_GOAL_RESUMED = 1;
 

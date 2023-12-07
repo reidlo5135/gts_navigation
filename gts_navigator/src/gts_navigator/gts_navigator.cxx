@@ -295,8 +295,6 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
         {
             RCLCPP_ERROR(this->node_->get_logger(), "!!!!! navigate_to_pose status callback goal canceled !!!!!");
             RCLCPP_LINE_ERROR();
-
-            this->gts_navigation_status_publish(goal_status_code);
         }
         else
         {
