@@ -12,6 +12,8 @@ namespace gts_navigator
         std::vector<geometry_msgs::msg::Point> slam_waypoints_list_;
         size_t slam_waypoints_list_size_;
 
+        bool is_navigation_resumed_flag_;
+
         rclcpp::Node::SharedPtr node_;
 
         rclcpp::CallbackGroup::SharedPtr gps_goal_waypoints_subscription_cb_group_;
@@ -45,7 +47,7 @@ namespace gts_navigator
         void gts_navigation_result_publish(const int &goal_status_code);
         void gts_navigation_control_subscription_cb(const gts_navigation_msgs::msg::NavigationControl::SharedPtr gts_navigation_control_cb_data);
         void navigate_to_pose_send_goal();
-        void navigate_to_pose_goal_response_cb(std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> future);
+        void navigate_to_pose_goal_response_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr &goal_handle);
         void navigate_to_pose_feedback_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr goal_handle, const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback);
         void navigate_to_pose_result_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult &wrapped_result);
 

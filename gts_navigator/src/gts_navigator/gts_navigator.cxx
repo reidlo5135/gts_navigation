@@ -2,7 +2,8 @@
 
 gts_navigator::Navigator::Navigator()
     : Node(RCL_NODE_NAME),
-      slam_waypoints_list_index_(GOAL_WAYPOINTS_VECTOR_DEFAULT_IDX)
+      slam_waypoints_list_index_(GOAL_WAYPOINTS_VECTOR_DEFAULT_IDX),
+      is_navigation_resumed_flag_(false)
 {
     this->node_ = std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node *) {});
 
@@ -246,11 +247,22 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
 
         if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_STARTED)
         {
-            RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback goal started =====");
-            RCLCPP_LINE_INFO();
+            if (this->is_navigation_resumed_flag_ == false && slam_waypoints_list_index_ == RCL_DEFAULT_INT)
+            {
+                RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback navigation started =====");
+                RCLCPP_LINE_INFO();
 
-            this->gts_navigation_status_publish(goal_status_code);
+                this->gts_navigation_status_publish(RCL_DEFAULT_INT);
+            }
+            else
+            {
+                RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback goal started =====");
+                RCLCPP_LINE_INFO();
+
+                this->gts_navigation_status_publish(goal_status_code);
+            }
         }
+
         else if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_SUCCEEDED)
         {
             RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback goal succeeded =====");
@@ -267,7 +279,8 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
                 slam_waypoints_list_size_ = GOAL_WAYPOINTS_VECTOR_DEFAULT_SIZE;
                 slam_waypoints_list_.clear();
 
-                navigate_to_pose_client_->async_cancel_all_goals();
+                this->is_navigation_resumed_flag_ == false;
+                this->navigate_to_pose_client_->async_cancel_all_goals();
             }
             else
             {
@@ -276,6 +289,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
                 RCLCPP_INFO(this->node_->get_logger(), "===== navigate_to_pose status callback will proceed next [%d] goal =====", slam_waypoints_list_index_);
                 RCLCPP_LINE_INFO();
 
+                this->is_navigation_resumed_flag_ == false;
                 this->gts_navigation_status_publish(goal_status_code);
                 this->navigate_to_pose_send_goal();
             }
@@ -377,6 +391,7 @@ void gts_navigator::Navigator::gts_navigation_control_subscription_cb(const gts_
             this->slam_waypoints_list_index_, this->slam_waypoints_list_size_);
         RCLCPP_LINE_INFO();
 
+        this->is_navigation_resumed_flag_ = true;
         this->navigate_to_pose_send_goal();
         this->gts_navigation_status_publish(RCL_NAVIGATE_TO_POSE_GOAL_RESUMED);
     }
@@ -413,10 +428,10 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
     }
 
     RCLCPP_INFO(
-            this->node_->get_logger(),
-            "navigate_to_pose action server is ready\n\tslam x : [%f]\n\tslam y : [%f]",
-            slam_x,
-            slam_y);
+        this->node_->get_logger(),
+        "navigate_to_pose action server is ready\n\tslam x : [%f]\n\tslam y : [%f]",
+        slam_x,
+        slam_y);
     RCLCPP_LINE_INFO();
 
     geometry_msgs::msg::PoseStamped::UniquePtr geometry_msgs_pose_stamped = std::make_unique<geometry_msgs::msg::PoseStamped>();
@@ -464,10 +479,8 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
     RCLCPP_LINE_INFO();
 }
 
-void gts_navigator::Navigator::navigate_to_pose_goal_response_cb(std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> future)
+void gts_navigator::Navigator::navigate_to_pose_goal_response_cb(const rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr &goal_handle)
 {
-    const std::shared_ptr<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>> goal_handle = future.get();
-
     if (!goal_handle)
     {
         RCLCPP_ERROR(this->node_->get_logger(), "navigate_to_pose goal response callback was rejected by [%s] server", RCL_NAVIGATE_TO_POSE_ACTION_SERVER_NAME);
