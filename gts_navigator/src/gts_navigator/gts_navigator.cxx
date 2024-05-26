@@ -303,6 +303,7 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
             RCLCPP_LINE_WARN();
 
             this->gts_navigation_status_publish(goal_status_code);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             this->navigate_to_pose_send_goal();
         }
         else if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_CANCELED)
