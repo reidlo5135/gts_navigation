@@ -303,12 +303,22 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
             RCLCPP_LINE_WARN();
 
             this->gts_navigation_status_publish(goal_status_code);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+
+            RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Canceling !!!!!");
+            RCLCPP_LINE_WARN();
+            this->navigate_to_pose_client_->async_cancel_all_goals();
+
+            RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Retrying !!!!!");
+            RCLCPP_LINE_WARN();
             this->navigate_to_pose_send_goal();
+        }
+        else if (goal_status_code == 3)
+        {
+            RCLCPP_ERROR(this->node_->get_logger(), "!!!!! Goal Canceling !!!!!");
         }
         else if (goal_status_code == RCL_NAVIGATE_TO_POSE_GOAL_CANCELED)
         {
-            RCLCPP_ERROR(this->node_->get_logger(), "!!!!! navigate_to_pose status callback goal canceled !!!!!");
+            RCLCPP_ERROR(this->node_->get_logger(), "!!!!! Goal Canceled !!!!!");
             RCLCPP_LINE_ERROR();
         }
         else
