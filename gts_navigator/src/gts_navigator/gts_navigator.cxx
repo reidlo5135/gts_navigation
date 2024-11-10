@@ -304,9 +304,14 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
 
             this->gts_navigation_status_publish(goal_status_code);
 
-            RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Canceling !!!!!");
-            RCLCPP_LINE_WARN();
-            this->navigate_to_pose_client_->async_cancel_all_goals();
+            // RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Canceling !!!!!");
+            // RCLCPP_LINE_WARN();
+            // const auto &cancel_response = this->navigate_to_pose_client_->async_cancel_all_goals();
+            // RCLCPP_INFO(this->node_->get_logger(), "%d", cancel_response.get()->return_code);
+
+            RCLCPP_INFO(this->node_->get_logger(), "!!!!! Thread Sleep !!!!!");
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            RCLCPP_INFO(this->node_->get_logger(), "!!!!! Thread Awake !!!!!");
 
             RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Retrying !!!!!");
             RCLCPP_LINE_WARN();
@@ -320,6 +325,10 @@ void gts_navigator::Navigator::navigate_to_pose_goal_status_subscription_cb(cons
         {
             RCLCPP_ERROR(this->node_->get_logger(), "!!!!! Goal Canceled !!!!!");
             RCLCPP_LINE_ERROR();
+
+            RCLCPP_WARN(this->node_->get_logger(), "!!!!! Goal Aborted Goal Retrying !!!!!");
+            RCLCPP_LINE_WARN();
+            this->navigate_to_pose_send_goal();
         }
         else
         {
@@ -423,8 +432,8 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
         return;
     }
 
-    const double &slam_x = this->slam_waypoints_list_[slam_waypoints_list_index_].x;
-    const double &slam_y = this->slam_waypoints_list_[slam_waypoints_list_index_].y;
+    double slam_x = this->slam_waypoints_list_[slam_waypoints_list_index_].x;
+    double slam_y = this->slam_waypoints_list_[slam_waypoints_list_index_].y;
 
     bool is_navigate_to_pose_server_ready = this->navigate_to_pose_client_->wait_for_action_server(std::chrono::seconds(5));
 
@@ -438,6 +447,19 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
         return;
     }
 
+    geometry_msgs::msg::PoseStamped::UniquePtr geometry_msgs_pose_stamped = std::make_unique<geometry_msgs::msg::PoseStamped>();
+
+    geometry_msgs::msg::Point::UniquePtr geometry_msgs_point = std::make_unique<geometry_msgs::msg::Point>();
+
+    if (slam_x - 13.165427258704586 <= 0.2 && slam_y - 23.22846368350172 <= 0.2)
+    {
+        RCLCPP_INFO(this->node_->get_logger(), "!!!!! CNC !!!!!");
+        slam_y -= 0.5;
+    }
+
+    geometry_msgs_point->set__x(slam_x);
+    geometry_msgs_point->set__y(slam_y);
+
     RCLCPP_INFO(
         this->node_->get_logger(),
         "navigate_to_pose action server is ready\n\tslam x : [%f]\n\tslam y : [%f]",
@@ -445,11 +467,6 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
         slam_y);
     RCLCPP_LINE_INFO();
 
-    geometry_msgs::msg::PoseStamped::UniquePtr geometry_msgs_pose_stamped = std::make_unique<geometry_msgs::msg::PoseStamped>();
-
-    geometry_msgs::msg::Point::UniquePtr geometry_msgs_point = std::make_unique<geometry_msgs::msg::Point>();
-    geometry_msgs_point->set__x(slam_x);
-    geometry_msgs_point->set__y(slam_y);
     geometry_msgs_point->set__z(RCL_DEFAULT_DOUBLE);
 
     geometry_msgs::msg::Quaternion::UniquePtr geometry_msgs_quaternion = std::make_unique<geometry_msgs::msg::Quaternion>();
@@ -473,11 +490,11 @@ void gts_navigator::Navigator::navigate_to_pose_send_goal()
     this->navigate_to_pose_goal_->set__pose(geometry_msgs_pose_stamped_moved);
 
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions navigate_to_pose_send_goal_opts = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
-    navigate_to_pose_send_goal_opts.feedback_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_feedback_cb, this, _1, _2);
-    navigate_to_pose_send_goal_opts.goal_response_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_goal_response_cb, this, _1);
-    navigate_to_pose_send_goal_opts.result_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_result_cb, this, _1);
+    // navigate_to_pose_send_goal_opts.feedback_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_feedback_cb, this, _1, _2);
+    // navigate_to_pose_send_goal_opts.goal_response_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_goal_response_cb, this, _1);
+    // navigate_to_pose_send_goal_opts.result_callback = std::bind(&gts_navigator::Navigator::navigate_to_pose_result_cb, this, _1);
 
-    std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> navigate_to_pose_goal_future = navigate_to_pose_client_->async_send_goal(*navigate_to_pose_goal_, navigate_to_pose_send_goal_opts);
+    std::shared_future<rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::SharedPtr> navigate_to_pose_goal_future = navigate_to_pose_client_->async_send_goal(*navigate_to_pose_goal_);
     this->navigate_to_pose_goal_handle_ = navigate_to_pose_goal_future.get();
 
     RCLCPP_INFO(
